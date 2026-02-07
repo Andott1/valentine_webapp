@@ -4,33 +4,36 @@ import 'core/services/date_service.dart';
 import 'core/services/storage_service.dart';
 
 class AppController {
-  // START IN LOADING PHASE
   final phaseNotifier = ValueNotifier<AppPhase>(AppPhase.loading);
-
   bool shouldPlayTransformation = false;
 
   void initialize() {
-    // We don't determine the phase here anymore. 
-    // We wait for the LoadingScreen to call onLoadingComplete.
+    // Initialization logic is handled by LoadingScreen calling onLoadingComplete
   }
 
-  // Called by LoadingScreen when assets are ready
-  void onLoadingComplete() {
+  // NEW: Helper to check where we are going before we get there
+  AppPhase get initialPhase {
     final isTime = DateService.isValentines();
     final hasAccepted = StorageService.hasAccepted;
 
     if (hasAccepted) {
       if (isTime) {
-        phaseNotifier.value = AppPhase.bouquet;
+        return AppPhase.bouquet;
       } else {
-        phaseNotifier.value = AppPhase.countdown;
+        return AppPhase.countdown;
       }
     } else {
-      phaseNotifier.value = AppPhase.proposal;
+      return AppPhase.proposal;
     }
+  }
+
+  void onLoadingComplete() {
+    // Use the same logic to actually switch the phase
+    phaseNotifier.value = initialPhase;
 
     // Logic for playing the entrance animation if we just arrived at bouquet
-    if (isTime && StorageService.lastTransformationDate != DateService.todayString()) {
+    if (initialPhase == AppPhase.bouquet && 
+        StorageService.lastTransformationDate != DateService.todayString()) {
       shouldPlayTransformation = true;
       StorageService.setLastTransformationDate(DateService.todayString());
     }

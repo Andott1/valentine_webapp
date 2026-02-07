@@ -66,7 +66,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Happy Valentine's Day! Baby <3", textAlign: TextAlign.center, style: TextStyle(fontSize: 40, color: Color(0xFFD81B60), fontWeight: FontWeight.bold, shadows: [Shadow(color: Colors.white, offset: Offset(2, 2))])),
+                      const Text("Happy Valentine's Day!\nILYSM Baby <3", textAlign: TextAlign.center, style: TextStyle(fontSize: 40, color: Color(0xFFD81B60), fontWeight: FontWeight.bold, shadows: [Shadow(color: Colors.white, offset: Offset(2, 2))])),
                       const SizedBox(height: 40),
                       ScaleTransition(
                         scale: _scaleAnimation,

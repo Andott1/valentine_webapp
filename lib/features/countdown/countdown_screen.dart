@@ -199,11 +199,18 @@ class _CountdownScreenState extends State<CountdownScreen> {
             bottom: 20,
             child: SafeArea(
               child: Opacity(
-                opacity: 0.3, // Subtle
-                child: IconButton(
-                  icon: const Icon(Icons.key, size: 30, color: Colors.black), 
-                  tooltip: "Developer Override (Password Required)",
-                  onPressed: _showDebugLogin,
+                opacity: 0.5, // Increased from 0.3
+                child: Container(
+                  // Add a subtle background so it's always visible against flowers
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.key, size: 30, color: Colors.black), 
+                    tooltip: "Developer Override",
+                    onPressed: _showDebugLogin,
+                  ),
                 ),
               ),
             ),

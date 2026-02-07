@@ -45,8 +45,8 @@ class _PixelWindowState extends State<PixelWindow>
   @override
   Widget build(BuildContext context) {
     // Colors for the 3D Bevel Effect
-    final Color highlight = Colors.white.withOpacity(0.9);
-    final Color shadow = Colors.black.withOpacity(0.4);
+    final Color highlight = Colors.white.withValues(alpha: 0.9);
+    final Color shadow = Colors.black.withValues(alpha: 0.4);
     final Color borderColor = Colors.black;
 
     return AnimatedBuilder(
