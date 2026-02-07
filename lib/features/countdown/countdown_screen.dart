@@ -131,7 +131,7 @@ class _CountdownScreenState extends State<CountdownScreen> {
                         width: windowWidth,
                         child: PixelWindow(
                           title: "Invitation_Status.exe",
-                          color: const Color(0xFFB2DFDB),
+                          color: const Color(0xFFF8BBD0),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -149,7 +149,7 @@ class _CountdownScreenState extends State<CountdownScreen> {
                                 "Please return to this site in:",
                                 style: GoogleFonts.jersey10(
                                   fontSize: 24,
-                                  color: Colors.black54,
+                                  color: const Color(0xFF880E4F),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -158,9 +158,9 @@ class _CountdownScreenState extends State<CountdownScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFCFD8DC),
+                                  color: Colors.grey[100],
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: const Color(0xFF546E7A), width: 3),
+                                  border: Border.all(color: const Color(0xFF880E4F), width: 3),
                                   boxShadow: const [BoxShadow(color: Colors.black12, offset: Offset(0, 0))]
                                 ),
                                 child: Column(
@@ -170,18 +170,18 @@ class _CountdownScreenState extends State<CountdownScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.baseline,
                                       textBaseline: TextBaseline.alphabetic,
                                       children: [
-                                        Text("$days", style: GoogleFonts.jersey10(fontSize: 56, color: const Color(0xFF37474F), height: 1.0)),
+                                        Text("$days", style: GoogleFonts.jersey10(fontSize: 56, color: const Color(0xFFD81B60), height: 1.0)),
                                         const SizedBox(width: 8),
-                                        Text("DAYS", style: GoogleFonts.jersey10(fontSize: 24, color: const Color(0xFF78909C))),
+                                        Text("DAYS", style: GoogleFonts.jersey10(fontSize: 24, color: const Color(0xFF880E4F))),
                                       ],
                                     ),
-                                    Container(margin: const EdgeInsets.symmetric(vertical: 8), height: 2, color: const Color(0xFFB0BEC5)),
-                                    Text("${_twoDigits(hours)}:${_twoDigits(minutes)}:${_twoDigits(seconds)}", style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFF37474F), letterSpacing: 4, height: 1.0)),
+                                    Container(margin: const EdgeInsets.symmetric(vertical: 8), height: 2, color: const Color(0xFF880E4F)),
+                                    Text("${_twoDigits(hours)}:${_twoDigits(minutes)}:${_twoDigits(seconds)}", style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFFD81B60), letterSpacing: 4, height: 1.0)),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 25),
-                              Text("See you in February 14!.", style: GoogleFonts.jersey10(fontSize: 20, color: Colors.black87)),
+                              Text("See you in February 14!.", style: GoogleFonts.jersey10(fontSize: 20, color: const Color(0xFF880E4F))),
                             ],
                           ),
                         ),

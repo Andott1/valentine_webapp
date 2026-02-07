@@ -15,11 +15,14 @@ class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
   final List<HeartParticle> _staticHearts = [];
   final Random _random = Random();
 
+  // 24 FPS Logic
+  final int _fps = 24;
+  final int _durationSeconds = 60;
+
   @override
   void initState() {
     super.initState();
     
-    // PRE-CALCULATE HEARTS
     for (int i = 0; i < 15; i++) {
       _staticHearts.add(
         HeartParticle(
@@ -28,13 +31,15 @@ class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
           speed: _random.nextDouble() * 0.2 + 0.1,
           size: _random.nextDouble() * 15 + 10,
           color: Colors.pinkAccent.withValues(alpha: _random.nextDouble() * 0.5 + 0.2),
+          rotationSpeed: (_random.nextDouble() - 0.5) * 4.0, // Hearts spin faster!
+          initialRotation: _random.nextDouble() * 2 * pi,
         ),
       );
     }
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: Duration(seconds: _durationSeconds),
     )..repeat();
   }
 
@@ -48,13 +53,17 @@ class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // OPTIMIZED BACKGROUND
         RepaintBoundary(
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
+              // --- 24 FPS LOCK ---
+              double t = _controller.value;
+              int totalFrames = _fps * _durationSeconds;
+              double discreteT = (t * totalFrames).floor() / totalFrames;
+
               return CustomPaint(
-                painter: HeartPainter(_staticHearts, _controller.value),
+                painter: HeartPainter(_staticHearts, discreteT),
                 size: Size.infinite,
               );
             },
@@ -72,13 +81,23 @@ class HeartParticle {
   final double speed;
   final double size;
   final Color color;
+  final double rotationSpeed;   // NEW
+  final double initialRotation; // NEW
 
-  const HeartParticle({required this.initialX, required this.initialY, required this.speed, required this.size, required this.color});
+  const HeartParticle({
+    required this.initialX, 
+    required this.initialY, 
+    required this.speed, 
+    required this.size, 
+    required this.color,
+    required this.rotationSpeed,
+    required this.initialRotation,
+  });
 }
 
 class HeartPainter extends CustomPainter {
   final List<HeartParticle> hearts;
-  final double progress; // 0.0 to 1.0
+  final double progress; 
 
   HeartPainter(this.hearts, this.progress);
 
@@ -89,19 +108,35 @@ class HeartPainter extends CustomPainter {
     for (var heart in hearts) {
       paint.color = heart.color;
       
-      // OPTIMIZED MOVEMENT: Loop position based on progress
+      // Calculate discrete position
       double currentY = (heart.initialY + (progress * heart.speed * 5)) % 1.0;
+      double currentRotation = heart.initialRotation + (progress * heart.rotationSpeed * 6.28);
       
       final dx = heart.initialX * size.width;
       final dy = currentY * size.height;
       final s = heart.size / 3;
 
-      // Draw Pixel Heart
-      canvas.drawRect(Rect.fromLTWH(dx - s, dy - s, s, s), paint);
-      canvas.drawRect(Rect.fromLTWH(dx + s, dy - s, s, s), paint);
-      canvas.drawRect(Rect.fromLTWH(dx - 2*s, dy, 5*s, s), paint);
-      canvas.drawRect(Rect.fromLTWH(dx - s, dy + s, 3*s, s), paint);
-      canvas.drawRect(Rect.fromLTWH(dx, dy + 2*s, s, s), paint);
+      // SAVE CANVAS STATE
+      canvas.save();
+      
+      // MOVE TO HEART CENTER
+      canvas.translate(dx, dy);
+      
+      // ROTATE
+      canvas.rotate(currentRotation);
+      
+      // DRAW SHAPE (Relative to 0,0 center)
+      // Top bumps
+      canvas.drawRect(Rect.fromLTWH(-s, -s, s, s), paint);
+      canvas.drawRect(Rect.fromLTWH(s, -s, s, s), paint);
+      // Middle
+      canvas.drawRect(Rect.fromLTWH(-2*s, 0, 5*s, s), paint);
+      // Bottom
+      canvas.drawRect(Rect.fromLTWH(-s, s, 3*s, s), paint);
+      canvas.drawRect(Rect.fromLTWH(0, 2*s, s, s), paint);
+
+      // RESTORE CANVAS (So next heart isn't rotated by this one)
+      canvas.restore();
     }
   }
 

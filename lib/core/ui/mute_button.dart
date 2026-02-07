@@ -20,7 +20,7 @@ class _MuteButtonState extends State<MuteButton> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: const Color(0xFFE0F7FA), // Light Cyan (Retro Windows color)
+          color: const Color(0xFFFFF0F5), // Light Cyan (Retro Windows color)
           border: Border.all(color: Colors.black, width: 2),
           boxShadow: const [
              BoxShadow(color: Colors.black26, offset: Offset(2, 2), blurRadius: 0)

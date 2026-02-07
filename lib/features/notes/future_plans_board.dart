@@ -2,6 +2,7 @@ import 'dart:math'; // Import for min()
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/storage_service.dart';
+import '../../core/ui/pixel_window.dart'; // IMPORT PIXEL WINDOW
 
 class FuturePlansBoard extends StatefulWidget {
   const FuturePlansBoard({super.key});
@@ -95,26 +96,21 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
     return Center(
       child: SizedBox(
         width: containerWidth,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          // We removed margin: horizontal 20 because sizing is handled by SizedBox now
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.9),
-            border: Border.all(color: Colors.black, width: 3),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, offset: Offset(8, 8), blurRadius: 0)
-            ],
-          ),
+        // WRAPPED IN PIXEL WINDOW
+        child: PixelWindow(
+          title: "Future_Plans.exe",
+          color: const Color(0xFFF8BBD0), // Pastel Pink to match the theme
           child: Column(
             children: [
               Text(
                 "OUR BUCKET LIST",
-                style: GoogleFonts.jersey10(fontSize: 32, color: const Color(0xFF880E4F)),
+                style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFFD81B60)),
+                textAlign: TextAlign.center,
               ),
               Text(
                 "Let's save up for these!",
-                style: GoogleFonts.jersey10(fontSize: 20, color: Colors.black54),
+                style: GoogleFonts.jersey10(fontSize: 20, color: const Color(0xFF880E4F)),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 15),
               
@@ -128,8 +124,12 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isFilled ? const Color(0xFFF8BBD0) : Colors.grey[200],
+                      // Clean white look inside the slots
+                      color: isFilled ? const Color(0xFFF8BBD0) : Colors.grey[100],
                       border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black12, offset: Offset(2, 2))
+                      ]
                     ),
                     child: Row(
                       children: [

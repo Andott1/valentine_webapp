@@ -4,15 +4,14 @@ class SoundService {
   static final AudioPlayer _sfxPlayer = AudioPlayer();
   static final AudioPlayer _bgmPlayer = AudioPlayer();
   
-  // Track mute state
   static bool isMuted = false;
 
   static Future<void> init() async {
     await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
     await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
     
-    // Ensure BGM player is reset on app start
     await _bgmPlayer.stop(); 
+    // Set default to loop
     await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
   }
 
@@ -40,14 +39,24 @@ class SoundService {
     await _sfxPlayer.play(AssetSource('sounds/success.mp3'));
   }
 
-  // --- BGM ---
+  // --- BGM (Updated for Infinite Loop) ---
   static void playBgm() async {
-    // 1. SAFETY CHECK: If already playing, do nothing!
+    // 1. If already playing, do nothing (prevents double audio)
     if (_bgmPlayer.state == PlayerState.playing) return;
 
-    if (isMuted) return; // Don't start if muted
+    // 2. If muted, do nothing
+    if (isMuted) return;
 
-    await _bgmPlayer.play(AssetSource('sounds/bgm.mp3'), volume: 0.3);
+    // 3. FORCE LOOP MODE
+    // We set this explicitly every time to guarantee it never stops.
+    await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
+
+    // 4. Smart Resume/Play Logic
+    if (_bgmPlayer.state == PlayerState.paused) {
+      await _bgmPlayer.resume(); // Continue from where we left off
+    } else {
+      await _bgmPlayer.play(AssetSource('sounds/bgm.mp3'), volume: 0.3); // Start fresh
+    }
   }
 
   static void stopBgm() async {
@@ -59,16 +68,13 @@ class SoundService {
     isMuted = !isMuted;
     
     if (isMuted) {
-      // If we just muted, stop everything
-      await _bgmPlayer.pause(); // Pause allows resuming later
+      // Pause BGM (so we can resume later)
+      await _bgmPlayer.pause();
+      // Stop SFX immediately
       await _sfxPlayer.stop();
     } else {
-      // If we just unmuted, resume BGM (if we are in a screen that needs it)
-      // Note: We normally let the UI handle "when" to resume, 
-      // but strictly resuming only if we were paused is safe.
-      if (_bgmPlayer.state == PlayerState.paused) {
-        await _bgmPlayer.resume();
-      }
+      // Unmuting: Call playBgm() which now handles the Resume vs Play logic automatically
+      playBgm();
     }
   }
 }
