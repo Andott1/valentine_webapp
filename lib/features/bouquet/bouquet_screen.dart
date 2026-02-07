@@ -61,7 +61,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Happy Valentine's Day! Baby <3",
+                    "Happy Valentine's Day!\n ILYSM Baby <3",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 40,
