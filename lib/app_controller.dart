@@ -4,11 +4,18 @@ import 'core/services/date_service.dart';
 import 'core/services/storage_service.dart';
 
 class AppController {
-  final phaseNotifier = ValueNotifier<AppPhase>(AppPhase.proposal);
+  // START IN LOADING PHASE
+  final phaseNotifier = ValueNotifier<AppPhase>(AppPhase.loading);
 
   bool shouldPlayTransformation = false;
 
   void initialize() {
+    // We don't determine the phase here anymore. 
+    // We wait for the LoadingScreen to call onLoadingComplete.
+  }
+
+  // Called by LoadingScreen when assets are ready
+  void onLoadingComplete() {
     final isTime = DateService.isValentines();
     final hasAccepted = StorageService.hasAccepted;
 
@@ -16,12 +23,12 @@ class AppController {
       if (isTime) {
         phaseNotifier.value = AppPhase.bouquet;
       } else {
-        phaseNotifier.value = AppPhase.countdown; // Go to timer
+        phaseNotifier.value = AppPhase.countdown;
       }
     } else {
       phaseNotifier.value = AppPhase.proposal;
     }
-    
+
     // Logic for playing the entrance animation if we just arrived at bouquet
     if (isTime && StorageService.lastTransformationDate != DateService.todayString()) {
       shouldPlayTransformation = true;
@@ -31,8 +38,6 @@ class AppController {
 
   void acceptProposal() async {
     await StorageService.setAccepted(true);
-    // We don't change phase immediately here anymore.
-    // The UI (ProposalScreen) will handle the Confetti -> Phase Change transition.
   }
 
   void transitionAfterProposal() {
@@ -44,9 +49,8 @@ class AppController {
     }
   }
 
-  // --- ADD THIS DEBUG METHOD ---
   void debugTestBouquet() {
-    shouldPlayTransformation = true; // Force the animation to play
+    shouldPlayTransformation = true;
     phaseNotifier.value = AppPhase.bouquet;
   }
 }

@@ -73,7 +73,7 @@ class _ProposalScreenState extends State<ProposalScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Will you be my\nValentines?", 
+                      "Will you be my\nValentine?", 
                       textAlign: TextAlign.center, 
                       style: GoogleFonts.jersey10(
                         fontSize: 64, 

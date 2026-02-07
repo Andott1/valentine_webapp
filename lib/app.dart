@@ -5,6 +5,7 @@ import 'features/proposal/proposal_screen.dart';
 import 'features/bouquet/bouquet_screen.dart';
 import 'core/models/app_phase.dart';
 import 'features/countdown/countdown_screen.dart';
+import 'features/loading/loading_screen.dart';
 import 'core/ui/crt_overlay.dart';
 
 class ValentineApp extends StatefulWidget {
@@ -28,19 +29,14 @@ class _ValentineAppState extends State<ValentineApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // PASTEL THEME CONFIGURATION
-        primaryColor: const Color(0xFFF48FB1), // Pastel Pink
-        scaffoldBackgroundColor: const Color(0xFFFFF0F5), // Lavender Blush (Very light pink)
-        
-        // Text Theme - Using Deep Pink/Burgundy for readability instead of harsh black
+        primaryColor: const Color(0xFFF48FB1),
+        scaffoldBackgroundColor: const Color(0xFFFFF0F5),
         textTheme: GoogleFonts.jersey10TextTheme(
           Theme.of(context).textTheme,
         ).apply(
-          bodyColor: const Color(0xFF880E4F), // Dark Burgundy
+          bodyColor: const Color(0xFF880E4F),
           displayColor: const Color(0xFF880E4F),
         ),
-        
-        // Button Theme Defaults
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shape: const BeveledRectangleBorder(),
@@ -58,6 +54,8 @@ class _ValentineAppState extends State<ValentineApp> {
             child: Builder(
               builder: (context) {
                 switch (phase) {
+                  case AppPhase.loading:
+                    return LoadingScreen(controller: controller);
                   case AppPhase.proposal:
                     return ProposalScreen(controller: controller);
                   case AppPhase.countdown:
