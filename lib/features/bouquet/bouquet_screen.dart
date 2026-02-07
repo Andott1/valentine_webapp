@@ -85,7 +85,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                         ],
                       ),
                       child: Image.asset(
-                        'assets/bouquet.gif',
+                        'assets/Bouquet.gif',
                         width: 300,
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.none,

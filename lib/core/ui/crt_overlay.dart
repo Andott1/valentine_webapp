@@ -12,35 +12,24 @@ class CrtOverlay extends StatelessWidget {
         // 1. The Actual App Content
         child,
 
-        // 2. The Scanline Effect (IgnorePointer lets clicks pass through)
+        // 2. The Scanline Effect (Using CustomPainter for accuracy)
         IgnorePointer(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: const [0.5, 0.5], // Creates sharp lines
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withValues(alpha: 0.05), // Very subtle darkening every other pixel
-                ],
-                tileMode: TileMode.repeated,
-              ),
-            ),
-            // We scale the background to be small (e.g., 4px high) so it repeats thousands of times
+          child: CustomPaint(
+            painter: ScanlinePainter(),
+            child: Container(), // Fills the screen
           ),
         ),
         
-        // 3. Optional: Vignette (Dark corners)
+        // 3. Vignette (Dark corners) - Made softer
         IgnorePointer(
           child: Container(
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 center: Alignment.center,
-                radius: 1.0,
+                radius: 1.5, // Larger radius so it doesn't crush the center
                 colors: [
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.2),
+                  Colors.black.withValues(alpha: 0.15), // Subtle darkness
                 ],
                 stops: const [0.6, 1.0],
               ),
@@ -50,4 +39,21 @@ class CrtOverlay extends StatelessWidget {
       ],
     );
   }
+}
+
+// This draws a line every 4 pixels
+class ScanlinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.05)
+      ..strokeWidth = 1;
+
+    for (double y = 0; y < size.height; y += 4) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
