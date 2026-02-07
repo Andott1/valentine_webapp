@@ -59,7 +59,8 @@ class _ValentineAppState extends State<ValentineApp> {
                   case AppPhase.proposal:
                     return ProposalScreen(controller: controller);
                   case AppPhase.countdown:
-                    return const CountdownScreen();
+                    // UPDATE THIS LINE: Pass the controller
+                    return CountdownScreen(controller: controller); 
                   case AppPhase.bouquet:
                     return BouquetScreen(controller: controller);
                 }

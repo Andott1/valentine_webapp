@@ -107,19 +107,6 @@ class _ProposalScreenState extends State<ProposalScreen> {
               ),
             ),
           ),
-          
-          Positioned(
-            right: 20, bottom: 40,
-            child: SafeArea(
-              child: Opacity(
-                opacity: 0.6, 
-                child: IconButton(
-                  icon: const Icon(Icons.bug_report, size: 30, color: Colors.black45), 
-                  onPressed: widget.controller.debugTestBouquet
-                )
-              ),
-            ),
-          ),
 
           if (_showExplosion)
             Positioned.fill(
