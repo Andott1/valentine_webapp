@@ -72,7 +72,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                         scale: _scaleAnimation,
                         child: Container(
                           decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.white.withValues(alpha: 0.6), blurRadius: 50, spreadRadius: 10)]),
-                          child: Image.asset('assets/bouquet.gif', width: 300, fit: BoxFit.contain, filterQuality: FilterQuality.none),
+                          child: Image.asset('assets/Bouquet.gif', width: 300, fit: BoxFit.contain, filterQuality: FilterQuality.none),
                         ),
                       ),
                       const SizedBox(height: 60),

@@ -105,7 +105,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "I Have a Question For You?",
+                    "I Have a Question For You...",
                     style: GoogleFonts.jersey10(
                       fontSize: 48,
                       color: const Color(0xFFD81B60),
