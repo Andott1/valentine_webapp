@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
+import 'app.dart';
+import 'core/services/storage_service.dart';
+import 'core/services/date_service.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  await StorageService.init();
+  await DateService.init();
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  runApp(const ValentineApp());
 }
