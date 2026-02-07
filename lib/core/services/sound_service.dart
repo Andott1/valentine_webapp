@@ -36,7 +36,7 @@ class SoundService {
   static void playSuccess() async {
     if (isMuted) return;
     await _sfxPlayer.stop();
-    await _sfxPlayer.play(AssetSource('sounds/success.mp3'));
+    await _sfxPlayer.play(AssetSource('sounds/success.mp3'), volume: 0.75);
   }
 
   // --- BGM (Updated for Infinite Loop) ---
