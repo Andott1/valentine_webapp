@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app_controller.dart';
 import '../../core/ui/falling_flowers_background.dart';
 import '../notes/future_plans_board.dart';
+import '../../core/services/sound_service.dart';
 
 class BouquetScreen extends StatefulWidget {
   final AppController controller;
@@ -23,6 +24,7 @@ class _BouquetScreenState extends State<BouquetScreen>
   @override
   void initState() {
     super.initState();
+    SoundService.playBgm();
     _entranceController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -41,6 +43,7 @@ class _BouquetScreenState extends State<BouquetScreen>
 
   @override
   void dispose() {
+    SoundService.stopBgm();
     _entranceController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -70,7 +73,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                       shadows: [Shadow(color: Colors.white, offset: Offset(2, 2))]
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   ScaleTransition(
                     scale: _scaleAnimation,
                     child: Container(
@@ -92,7 +95,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 20),
                   // Hint arrow to tell them to scroll down
                   const Icon(Icons.keyboard_arrow_down, size: 40, color: Colors.black26),
                   const Text(

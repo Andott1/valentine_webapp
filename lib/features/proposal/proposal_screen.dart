@@ -40,7 +40,7 @@ class _ProposalScreenState extends State<ProposalScreen> {
       SnackBar(
         backgroundColor: const Color(0xFF2A1D23),
         content: Text(
-          "Nice try! That button is broken now. 😎",
+          "Nice try! That button is broken now. Try the other one <3",
           style: GoogleFonts.jersey10( // <--- FONT FIX
             fontSize: 24, // Readable size for pixel font
             color: Colors.white,

@@ -12,31 +12,30 @@ class FallingHeartsBackground extends StatefulWidget {
 class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  final List<HeartParticle> _hearts = [];
+  final List<HeartParticle> _staticHearts = [];
   final Random _random = Random();
 
   @override
   void initState() {
     super.initState();
+    
+    // PRE-CALCULATE HEARTS
+    for (int i = 0; i < 15; i++) {
+      _staticHearts.add(
+        HeartParticle(
+          initialX: _random.nextDouble(),
+          initialY: _random.nextDouble(),
+          speed: _random.nextDouble() * 0.2 + 0.1,
+          size: _random.nextDouble() * 15 + 10,
+          color: Colors.pinkAccent.withValues(alpha: _random.nextDouble() * 0.5 + 0.2),
+        ),
+      );
+    }
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..repeat(); // Infinite loop
-
-    // Initialize 20 hearts with random starting positions
-    for (int i = 0; i < 20; i++) {
-      _hearts.add(_generateHeart(true));
-    }
-  }
-
-  HeartParticle _generateHeart(bool randomY) {
-    return HeartParticle(
-      x: _random.nextDouble(), // 0.0 to 1.0 (screen width)
-      y: randomY ? _random.nextDouble() : -0.1, // Start above screen if new
-      speed: _random.nextDouble() * 0.2 + 0.1, // Random fall speed
-      size: _random.nextDouble() * 15 + 10, // Random size 10-25px
-      color: Colors.pinkAccent.withValues(alpha: _random.nextDouble() * 0.5 + 0.2),
-    );
+    )..repeat();
   }
 
   @override
@@ -49,29 +48,18 @@ class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. The Animated Background
-        Positioned.fill(
+        // OPTIMIZED BACKGROUND
+        RepaintBoundary(
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
-              // Update positions
-              for (var heart in _hearts) {
-                heart.y += heart.speed * 0.01; // Move down
-                if (heart.y > 1.1) {
-                  // Reset if it goes off bottom
-                  var newHeart = _generateHeart(false);
-                  heart.x = newHeart.x;
-                  heart.y = newHeart.y;
-                  heart.speed = newHeart.speed;
-                }
-              }
               return CustomPaint(
-                painter: HeartPainter(_hearts),
+                painter: HeartPainter(_staticHearts, _controller.value),
+                size: Size.infinite,
               );
             },
           ),
         ),
-        // 2. The Screen Content
         widget.child,
       ],
     );
@@ -79,25 +67,20 @@ class _FallingHeartsBackgroundState extends State<FallingHeartsBackground>
 }
 
 class HeartParticle {
-  double x;
-  double y;
-  double speed;
-  double size;
-  Color color;
+  final double initialX;
+  final double initialY;
+  final double speed;
+  final double size;
+  final Color color;
 
-  HeartParticle({
-    required this.x,
-    required this.y,
-    required this.speed,
-    required this.size,
-    required this.color,
-  });
+  const HeartParticle({required this.initialX, required this.initialY, required this.speed, required this.size, required this.color});
 }
 
 class HeartPainter extends CustomPainter {
   final List<HeartParticle> hearts;
+  final double progress; // 0.0 to 1.0
 
-  HeartPainter(this.hearts);
+  HeartPainter(this.hearts, this.progress);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -105,20 +88,18 @@ class HeartPainter extends CustomPainter {
 
     for (var heart in hearts) {
       paint.color = heart.color;
-      // Convert normalized (0.0-1.0) coordinates to pixels
-      final dx = heart.x * size.width;
-      final dy = heart.y * size.height;
       
-      // Draw a simple pixel-heart or just a square for retro feel
-      // Let's draw a small pixel-like square cluster to mimic a heart
+      // OPTIMIZED MOVEMENT: Loop position based on progress
+      double currentY = (heart.initialY + (progress * heart.speed * 5)) % 1.0;
+      
+      final dx = heart.initialX * size.width;
+      final dy = currentY * size.height;
       final s = heart.size / 3;
-      
-      // Top two bumps
+
+      // Draw Pixel Heart
       canvas.drawRect(Rect.fromLTWH(dx - s, dy - s, s, s), paint);
       canvas.drawRect(Rect.fromLTWH(dx + s, dy - s, s, s), paint);
-      // Middle row
       canvas.drawRect(Rect.fromLTWH(dx - 2*s, dy, 5*s, s), paint);
-      // Bottom tapered rows
       canvas.drawRect(Rect.fromLTWH(dx - s, dy + s, 3*s, s), paint);
       canvas.drawRect(Rect.fromLTWH(dx, dy + 2*s, s, s), paint);
     }

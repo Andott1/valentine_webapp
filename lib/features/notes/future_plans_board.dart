@@ -1,3 +1,4 @@
+import 'dart:math'; // Import for min()
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/storage_service.dart';
@@ -12,7 +13,7 @@ class FuturePlansBoard extends StatefulWidget {
 class _FuturePlansBoardState extends State<FuturePlansBoard> {
   List<String> _plans = [];
   final int _maxPlans = 5;
-  final int _charLimit = 60; // Short enough to fit on a note
+  final int _charLimit = 60;
 
   @override
   void initState() {
@@ -79,66 +80,83 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.9),
-        border: Border.all(color: Colors.black, width: 3),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, offset: Offset(4, 4))
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "OUR BUCKET LIST",
-            style: GoogleFonts.jersey10(fontSize: 32, color: const Color(0xFF880E4F)),
+    // RESPONSIVE SIZING LOGIC
+    final screenWidth = MediaQuery.of(context).size.width;
+    double containerWidth;
+
+    if (screenWidth < 600) {
+      // Mobile: 90% width
+      containerWidth = screenWidth * 0.9;
+    } else {
+      // Desktop: 50% width (capped at 800px)
+      containerWidth = min(screenWidth * 0.5, 800);
+    }
+
+    return Center(
+      child: SizedBox(
+        width: containerWidth,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          // We removed margin: horizontal 20 because sizing is handled by SizedBox now
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.9),
+            border: Border.all(color: Colors.black, width: 3),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(color: Colors.black26, offset: Offset(8, 8), blurRadius: 0)
+            ],
           ),
-          Text(
-            "Let's save up for these!",
-            style: GoogleFonts.jersey10(fontSize: 20, color: Colors.black54),
-          ),
-          const SizedBox(height: 15),
-          
-          // THE 5 SLOTS
-          ...List.generate(_maxPlans, (index) {
-            bool isFilled = index < _plans.length;
-            return GestureDetector(
-              onTap: () => _addOrEditPlan(index),
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isFilled ? const Color(0xFFF8BBD0) : Colors.grey[200],
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      "${index + 1}.",
-                      style: GoogleFonts.jersey10(fontSize: 24, color: Colors.black54),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        isFilled ? _plans[index] : "Empty Slot (Tap to add)",
-                        style: GoogleFonts.jersey10(
-                          fontSize: 24,
-                          color: isFilled ? Colors.black : Colors.grey,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (isFilled) const Icon(Icons.edit, size: 16, color: Colors.black45)
-                  ],
-                ),
+          child: Column(
+            children: [
+              Text(
+                "OUR BUCKET LIST",
+                style: GoogleFonts.jersey10(fontSize: 32, color: const Color(0xFF880E4F)),
               ),
-            );
-          }),
-        ],
+              Text(
+                "Let's save up for these!",
+                style: GoogleFonts.jersey10(fontSize: 20, color: Colors.black54),
+              ),
+              const SizedBox(height: 15),
+              
+              // THE 5 SLOTS
+              ...List.generate(_maxPlans, (index) {
+                bool isFilled = index < _plans.length;
+                return GestureDetector(
+                  onTap: () => _addOrEditPlan(index),
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isFilled ? const Color(0xFFF8BBD0) : Colors.grey[200],
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${index + 1}.",
+                          style: GoogleFonts.jersey10(fontSize: 24, color: Colors.black54),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            isFilled ? _plans[index] : "Empty Slot (Tap to add)",
+                            style: GoogleFonts.jersey10(
+                              fontSize: 24,
+                              color: isFilled ? Colors.black : Colors.grey,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isFilled) const Icon(Icons.edit, size: 16, color: Colors.black45)
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
       ),
     );
   }
