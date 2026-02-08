@@ -142,9 +142,9 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
     double containerWidth;
 
     if (screenWidth < 600) {
-      containerWidth = screenWidth * 0.9;
+      containerWidth = screenWidth * 0.95; // Use more space on small screens
     } else {
-      containerWidth = min(screenWidth * 0.5, 800);
+      containerWidth = min(screenWidth * 0.6, 800);
     }
 
     return Center(
@@ -163,12 +163,18 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
                   children: [
                     Text(
                       "OUR BUCKET LIST",
-                      style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFFD81B60)),
+                      style: GoogleFonts.jersey10(
+                        fontSize: (screenWidth < 600) ? 48 : 56, 
+                        color: const Color(0xFFD81B60)
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       "Let's save up for these!",
-                      style: GoogleFonts.jersey10(fontSize: 20, color: const Color(0xFF880E4F)),
+                      style: GoogleFonts.jersey10(
+                        fontSize: (screenWidth < 600) ? 20 : 28, 
+                        color: const Color(0xFF880E4F)
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 15),

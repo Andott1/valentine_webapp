@@ -101,7 +101,7 @@ class _MuteButtonState extends State<MuteButton> {
                     Center(
                       child: Icon(
                         isMuted ? Icons.music_off : Icons.music_note,
-                        color: Colors.black87,
+                        color: Colors.white,
                         size: 20,
                       ),
                     ),

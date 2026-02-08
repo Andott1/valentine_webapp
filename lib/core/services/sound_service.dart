@@ -3,6 +3,8 @@ import 'package:audioplayers/audioplayers.dart';
 class SoundService {
   static final AudioPlayer _sfxPlayer = AudioPlayer();
   static final AudioPlayer _bgmPlayer = AudioPlayer();
+  // NEW: Dedicated player for the typing loop
+  static final AudioPlayer _typingPlayer = AudioPlayer();
   
   static bool isMuted = false;
 
@@ -10,14 +12,18 @@ class SoundService {
     await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
     await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
     
+    // NEW: Init typing player
+    await _typingPlayer.setReleaseMode(ReleaseMode.stop);
+    await _typingPlayer.setPlayerMode(PlayerMode.lowLatency);
+    
     await _bgmPlayer.stop(); 
-    // Set default to loop
     await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
   }
 
   static Future<void> preload() async {
     final cache = AudioCache(prefix: 'assets/sounds/');
-    await cache.loadAll(['click.mp3', 'error.mp3', 'success.mp3', 'bgm.mp3']);
+    // NOTE: You need to add 'typing.mp3' to your assets!
+    await cache.loadAll(['click.mp3', 'error.mp3', 'success.mp3', 'bgm.mp3', 'typing.mp3']);
   }
 
   // --- SFX ---
@@ -30,32 +36,40 @@ class SoundService {
   static void playError() async {
     if (isMuted) return;
     await _sfxPlayer.stop();
-    await _sfxPlayer.play(AssetSource('sounds/error.mp3'));
+    await _sfxPlayer.play(AssetSource('sounds/error.mp3'), volume: 0.55);
   }
 
   static void playSuccess() async {
     if (isMuted) return;
     await _sfxPlayer.stop();
-    await _sfxPlayer.play(AssetSource('sounds/success.mp3'), volume: 0.75);
+    await _sfxPlayer.play(AssetSource('sounds/success.mp3'), volume: 0.35);
   }
 
-  // --- BGM (Updated for Infinite Loop) ---
-  static void playBgm() async {
-    // 1. If already playing, do nothing (prevents double audio)
-    if (_bgmPlayer.state == PlayerState.playing) return;
+  // --- NEW: TYPING SFX ---
+  static void startTyping() async {
+    if (isMuted) return;
+    // Don't restart if already playing
+    if (_typingPlayer.state == PlayerState.playing) return;
 
-    // 2. If muted, do nothing
+    await _typingPlayer.setReleaseMode(ReleaseMode.loop);
+    await _typingPlayer.play(AssetSource('sounds/typing.mp3'), volume: 0.6);
+  }
+
+  static void stopTyping() async {
+    await _typingPlayer.stop();
+  }
+
+  // --- BGM ---
+  static void playBgm() async {
+    if (_bgmPlayer.state == PlayerState.playing) return;
     if (isMuted) return;
 
-    // 3. FORCE LOOP MODE
-    // We set this explicitly every time to guarantee it never stops.
     await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
 
-    // 4. Smart Resume/Play Logic
     if (_bgmPlayer.state == PlayerState.paused) {
-      await _bgmPlayer.resume(); // Continue from where we left off
+      await _bgmPlayer.resume(); 
     } else {
-      await _bgmPlayer.play(AssetSource('sounds/bgm.mp3'), volume: 0.3); // Start fresh
+      await _bgmPlayer.play(AssetSource('sounds/bgm.mp3'), volume: 0.3);
     }
   }
 
@@ -68,12 +82,11 @@ class SoundService {
     isMuted = !isMuted;
     
     if (isMuted) {
-      // Pause BGM (so we can resume later)
       await _bgmPlayer.pause();
-      // Stop SFX immediately
       await _sfxPlayer.stop();
+      // NEW: Stop typing immediately if muted
+      await _typingPlayer.stop();
     } else {
-      // Unmuting: Call playBgm() which now handles the Resume vs Play logic automatically
       playBgm();
     }
   }
