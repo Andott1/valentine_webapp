@@ -130,86 +130,89 @@ class _BouquetScreenState extends State<BouquetScreen>
       body: Stack(
         children: [
           FallingFlowersBackground(
-             child: PageView(
-               controller: _pageController,
-               scrollDirection: Axis.vertical,
-               physics: _isOpening ? const NeverScrollableScrollPhysics() : null,
-               children: [
-                 // PAGE 1: Bouquet Hub
-                 SafeArea( // Keeps content out of the "notch" area
-                   child: Column(
+            child: PageView(
+              controller: _pageController,
+              scrollDirection: Axis.vertical,
+              physics: _isOpening ? const NeverScrollableScrollPhysics() : null,
+              children: [
+                // PAGE 1: Bouquet Hub
+                SafeArea( // Keeps content out of the "notch" area
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60), // Space for Status Bar
+                      
+                      // Flexible Spacer: Pushes content to center, but yields if space is tight
+                      const Spacer(flex: 2),
+
+                      // TITLE TEXT
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: FittedBox( // Ensures text never overflows
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "Happy Valentine's Day!\nILYSM Baby <3", 
+                            textAlign: TextAlign.center, 
+                            style: TextStyle(
+                              fontSize: 48, // Base size, FittedBox will scale it down
+                              color: const Color(0xFFD81B60), 
+                              fontWeight: FontWeight.bold, 
+                              shadows: const [Shadow(color: Colors.white, offset: Offset(2, 2))]
+                            )
+                          ),
+                        ),
+                      ),
+                      
+                      const Spacer(flex: 1),
+                      
+                      // THE BOUQUET WIDGET
+                      ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: GestureDetector(
+                          onTap: _toggleFlip,
+                          onVerticalDragEnd: _handleSwipeUp,
+                          child: FloatingWidget(
+                            child: FlipWidget(
+                              controller: _flipController,
+                              front: _buildContainer(constrainedSize, child: Image.asset('assets/Bouquet.gif', fit: BoxFit.contain, gaplessPlayback: true)),
+                              back: _buildContainer(constrainedSize, child: Image.asset(_isOpening ? 'assets/envelope_open.gif' : 'assets/envelope.png', fit: BoxFit.contain, gaplessPlayback: true)),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+
+                      // HINT TEXT
+                      Text(
+                        _isEnvelopeVisible ? "(Swipe Up to Open)" : "(Tap for a surprise)", 
+                        style: const TextStyle(fontSize: 16, color: Colors.black45)
+                      ),
+                      
+                      const Spacer(flex: 3), // More space at bottom for visual balance
+
+                      // ARROW
+                      const Icon(Icons.keyboard_arrow_down, size: 40, color: Colors.black26),
+                      const Text("Scroll Down", style: TextStyle(fontSize: 16, color: Colors.black26)),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                
+                // PAGE 2: Future Plans
+                SafeArea(
+                   child: Column( // Use Column to add the spacer
                      children: [
-                       const SizedBox(height: 60), // Space for Status Bar
-                       
-                       // Flexible Spacer: Pushes content to center, but yields if space is tight
-                       const Spacer(flex: 2),
-
-                       // TITLE TEXT
-                       Padding(
-                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                         child: FittedBox( // Ensures text never overflows
-                           fit: BoxFit.scaleDown,
-                           child: Text(
-                             "Happy Valentine's Day!\nILYSM Baby <3", 
-                             textAlign: TextAlign.center, 
-                             style: TextStyle(
-                               fontSize: 48, // Base size, FittedBox will scale it down
-                               color: const Color(0xFFD81B60), 
-                               fontWeight: FontWeight.bold, 
-                               shadows: const [Shadow(color: Colors.white, offset: Offset(2, 2))]
-                             )
-                           ),
+                       const Expanded(
+                         child: Padding(
+                           padding: EdgeInsets.all(20), 
+                           child: FuturePlansBoard(),
                          ),
                        ),
-                       
-                       const Spacer(flex: 1),
-                       
-                       // THE BOUQUET WIDGET
-                       ScaleTransition(
-                         scale: _scaleAnimation,
-                         child: GestureDetector(
-                           onTap: _toggleFlip,
-                           onVerticalDragEnd: _handleSwipeUp,
-                           child: FloatingWidget(
-                             child: FlipWidget(
-                               controller: _flipController,
-                               front: _buildContainer(constrainedSize, child: Image.asset('assets/Bouquet.gif', fit: BoxFit.contain, gaplessPlayback: true)),
-                               back: _buildContainer(constrainedSize, child: Image.asset(_isOpening ? 'assets/envelope_open.gif' : 'assets/envelope.png', fit: BoxFit.contain, gaplessPlayback: true)),
-                             ),
-                           ),
-                         ),
-                       ),
-                       
-                       const SizedBox(height: 20),
-
-                       // HINT TEXT
-                       Text(
-                         _isEnvelopeVisible ? "(Swipe Up to Open)" : "(Tap for a surprise)", 
-                         style: const TextStyle(fontSize: 16, color: Colors.black45)
-                       ),
-                       
-                       const Spacer(flex: 3), // More space at bottom for visual balance
-
-                       // ARROW
-                       const Icon(Icons.keyboard_arrow_down, size: 40, color: Colors.black26),
-                       const Text("Scroll Down", style: TextStyle(fontSize: 16, color: Colors.black26)),
-                       const SizedBox(height: 20),
                      ],
                    ),
                  ),
-                 
-                 // PAGE 2: Future Plans
-                 Center(
-                   child: SingleChildScrollView(
-                     physics: const AlwaysScrollableScrollPhysics(),
-                     child: Padding(
-                       padding: const EdgeInsets.symmetric(vertical: 80), // Extra padding for status bar
-                       child: FuturePlansBoard(),
-                     ),
-                   ),
-                 ),
-               ],
-             ),
+              ],
+            ),
           ),
           
           // NEW STATUS BAR (Replaces floating Mute Button)

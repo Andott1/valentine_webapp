@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/sound_service.dart';
 
 class MuteButton extends StatefulWidget {
@@ -13,24 +14,23 @@ class _MuteButtonState extends State<MuteButton> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Determine State Colors
-    // Active (Music On): Retro Cyan
-    // Muted (Music Off): Grey/Red
     final bool isMuted = SoundService.isMuted;
     
+    // --- COLORS ---
+    // Active (Music On): Vibrant Retro Green
     final Color mainColor = isMuted 
         ? const Color(0xFFEF9A9A) // Red 200 (Muted)
-        : const Color(0xFF81C784); // Cyan 200 (Active)
+        : const Color(0xFF66BB6A); // Green 400 (Active)
         
     final Color shadowColor = isMuted
         ? const Color(0xFFC62828) // Red 800
-        : const Color(0xFF388E3C); // Cyan 700
+        : const Color(0xFF2E7D32); // Green 800
 
-    // 2. Button Dimensions
-    const double size = 44.0;
+    // --- DIMENSIONS ---
+    const double width = 140.0; // Much wider for text
+    const double height = 44.0;
     const double depth = 4.0;
     
-    // 3. Animation Offset
     final double offset = _isPressed ? depth : 0.0;
 
     return GestureDetector(
@@ -41,29 +41,16 @@ class _MuteButtonState extends State<MuteButton> {
       },
       onTapCancel: () => setState(() => _isPressed = false),
       child: SizedBox(
-        width: size,
-        height: size + depth, // Account for the 3D depth
+        width: width,
+        height: height + depth,
         child: Stack(
           children: [
-            // LAYER 1: The Black Outline (Bottom Base)
+            // LAYER 1: Shadow (Bottom)
             Positioned(
               top: depth,
               child: Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            
-            // LAYER 2: The Dark Shadow (Depth)
-            Positioned(
-              top: depth, // Static shadow position
-              child: Container(
-                width: size,
-                height: size, // Full height to fill the gap when unpressed
+                width: width,
+                height: height,
                 decoration: BoxDecoration(
                   color: shadowColor,
                   borderRadius: BorderRadius.circular(8),
@@ -72,37 +59,41 @@ class _MuteButtonState extends State<MuteButton> {
               ),
             ),
 
-            // LAYER 3: The Face (The part that moves)
+            // LAYER 2: Face (Top)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 50),
-              top: offset, // Moves down when pressed
+              top: offset,
               child: Container(
-                width: size,
-                height: size,
+                width: width,
+                height: height,
                 decoration: BoxDecoration(
                   color: mainColor,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
-                child: Stack(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Little Highlight Shine (Top Left)
-                    Positioned(
-                      top: 4, left: 4,
-                      child: Container(
-                        width: 8, height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
+                    // Icon
+                    Icon(
+                      isMuted ? Icons.music_off : Icons.music_note,
+                      color: Colors.white,
+                      size: 20,
                     ),
-                    // The Icon
-                    Center(
-                      child: Icon(
-                        isMuted ? Icons.music_off : Icons.music_note,
+                    const SizedBox(width: 8),
+                    // Text
+                    Text(
+                      isMuted ? "MUSIC OFF" : "MUSIC ON",
+                      style: GoogleFonts.jersey10(
                         color: Colors.white,
-                        size: 20,
+                        fontSize: 24,
+                        height: 1.0, // Tight line height for pixel font
+                        shadows: [
+                          const Shadow(
+                            color: Colors.black26, 
+                            offset: Offset(1, 1),
+                          )
+                        ]
                       ),
                     ),
                   ],
