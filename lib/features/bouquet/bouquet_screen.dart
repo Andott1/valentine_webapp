@@ -87,7 +87,7 @@ class _BouquetScreenState extends State<BouquetScreen>
     setState(() => _isOpening = true);
     SoundService.playClick();
 
-    Timer(const Duration(milliseconds: 4400), () {
+    Timer(const Duration(milliseconds: 6200), () {
       if (mounted) {
         setState(() => _isOpening = false);
         _showLetterWindow();
