@@ -5,7 +5,7 @@ import '../../core/ui/falling_hearts_background.dart';
 import '../../core/ui/pixel_button.dart';
 import '../../core/services/sound_service.dart';
 import '../../core/ui/flower_explosion.dart';
-import '../../core/ui/typewriter_text.dart'; // Ensure this is imported
+import '../../core/ui/typewriter_text.dart';
 
 class ProposalScreen extends StatefulWidget {
   final AppController controller;
@@ -19,7 +19,7 @@ class ProposalScreen extends StatefulWidget {
 class _ProposalScreenState extends State<ProposalScreen> {
   bool _isNoLocked = false;
   bool _showExplosion = false;
-  bool _showButtons = false; // Buttons are hidden until typing ends
+  bool _showButtons = false;
 
   void _handleYesClick() {
     SoundService.playSuccess();
@@ -62,8 +62,8 @@ class _ProposalScreenState extends State<ProposalScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFFFFF0F5).withValues(alpha: 0.9), // Lavender Blush
-                    const Color(0xFFFFCDD2).withValues(alpha: 0.5)  // Light Red/Pink
+                    const Color(0xFFFFF0F5).withValues(alpha: 0.9), 
+                    const Color(0xFFFFCDD2).withValues(alpha: 0.5)  
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -76,26 +76,28 @@ class _ProposalScreenState extends State<ProposalScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Fixed height container to prevent layout jump
+                        // Fixed height container + FittedBox for safety
                         SizedBox(
                           height: 140, 
                           child: Center(
-                            child: TypewriterText(
-                              text: "Will you be my\nValentine?",
-                              // Slightly slower for dramatic effect
-                              speed: const Duration(milliseconds: 150), 
-                              onComplete: () {
-                                setState(() {
-                                  _showButtons = true;
-                                });
-                              },
-                              style: GoogleFonts.jersey10(
-                                fontSize: 64, 
-                                height: 1.0, 
-                                color: const Color(0xFFC2185B), 
-                                shadows: [
-                                  const Shadow(offset: Offset(3, 3), color: Colors.white),
-                                ],
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: TypewriterText(
+                                text: "Will you be my\nValentine?",
+                                speed: const Duration(milliseconds: 150), 
+                                onComplete: () {
+                                  setState(() {
+                                    _showButtons = true;
+                                  });
+                                },
+                                style: GoogleFonts.jersey10(
+                                  fontSize: 64, 
+                                  height: 1.0, 
+                                  color: const Color(0xFFC2185B), 
+                                  shadows: [
+                                    const Shadow(offset: Offset(3, 3), color: Colors.white),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -103,7 +105,6 @@ class _ProposalScreenState extends State<ProposalScreen> {
                         
                         const SizedBox(height: 60),
                         
-                        // Fade in the buttons ONLY after typing is done
                         AnimatedOpacity(
                           opacity: _showButtons ? 1.0 : 0.0,
                           duration: const Duration(milliseconds: 1000),

@@ -18,13 +18,10 @@ class FuturePlansBoard extends StatefulWidget {
 
 class _FuturePlansBoardState extends State<FuturePlansBoard> {
   List<String> _plans = [];
-  final int _totalSlots = 10; // Bumped to 10 as requested
+  final int _totalSlots = 10; 
   final int _charLimit = 60;
   
-  // PAGINATION STATE
   int _currentPage = 0;
-  
-  // GLOBAL KEY FOR SCREENSHOTS
   final GlobalKey _globalKey = GlobalKey();
 
   @override
@@ -33,7 +30,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
     _plans = StorageService.futurePlans;
   }
 
-  // --- SAVE LOGIC ---
   Future<void> _saveAsPng() async {
     try {
       RenderRepaintBoundary? boundary = _globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -100,15 +96,12 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
             onPressed: () {
               setState(() {
                 if (absoluteIndex < _plans.length) {
-                  // Edit existing
                   if (controller.text.isEmpty) {
                      _plans.removeAt(absoluteIndex);
                   } else {
                      _plans[absoluteIndex] = controller.text;
                   }
                 } else {
-                  // Add new
-                  // Pad with empty strings if adding to a slot far ahead (edge case handling)
                   while (_plans.length < absoluteIndex) {
                     _plans.add(""); 
                   }
@@ -132,28 +125,15 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
       builder: (context, constraints) {
         final screenWidth = MediaQuery.of(context).size.width;
         
-        // --- SMART HEIGHT CALCULATION ---
-        // 1. Reserve space for the Top Status Bar (80px) + Bottom Padding (20px)
         const double topBarBuffer = 100.0; 
-        
-        // 2. Calculate the "Real" available height for our board
-        // We use 75% of the *remaining* space, not the total screen
         final double effectiveMaxHeight = (constraints.maxHeight - topBarBuffer);
         final double boardHeight = effectiveMaxHeight * 0.75;
-        
-        // 3. Constants for item calculation
-        const double headerHeight = 170.0; // Title + Nav + Padding
+        const double headerHeight = 170.0; 
         const double itemHeight = 70.0;
         
-        // 4. Calculate Items Per Page
-        // logic: (BoardHeight - Header) / ItemHeight
         final double availableForItems = boardHeight - headerHeight;
-        
-        // 5. Clamp logic: Even on tiny screens, show at least 2 items.
-        // If screen is HUGE, show max 5.
         final int itemsPerPage = (availableForItems / itemHeight).floor().clamp(2, 5);
         
-        // ... (Rest of logic: totalPages, startIndex, etc. remains the same)
         final int totalPages = (_totalSlots / itemsPerPage).ceil();
 
         if (_currentPage >= totalPages) _currentPage = totalPages - 1;
@@ -162,7 +142,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
         final int startIndex = _currentPage * itemsPerPage;
         final int endIndex = min(startIndex + itemsPerPage, _totalSlots);
 
-        // Width Logic
         double containerWidth;
         if (screenWidth < 600) {
           containerWidth = screenWidth * 0.95;
@@ -183,14 +162,17 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // HEADER
-                      Text(
-                        "OUR BUCKET LIST",
-                        style: GoogleFonts.jersey10(
-                          fontSize: (screenWidth < 600) ? 36 : 48, 
-                          color: const Color(0xFFD81B60)
+                      // HEADER - SCALED
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "OUR BUCKET LIST",
+                          style: GoogleFonts.jersey10(
+                            fontSize: (screenWidth < 600) ? 36 : 48, 
+                            color: const Color(0xFFD81B60)
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       Text(
                         "Let's save up for these!",
@@ -202,7 +184,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
                       ),
                       const SizedBox(height: 15),
                       
-                      // DYNAMIC ITEMS
                       ...List.generate(endIndex - startIndex, (i) {
                         int realIndex = startIndex + i;
                         bool isFilled = realIndex < _plans.length;
@@ -247,7 +228,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
 
                       const SizedBox(height: 10),
                       
-                      // NAVIGATION
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -280,7 +260,7 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
             const SizedBox(height: 20),
 
             PixelButton(
-              text: "SAVE PAGE AS PNG",
+              text: "SAVE PAGE",
               onPressed: _saveAsPng,
               mainColor: const Color(0xFF81C784),
               shadowColor: const Color(0xFF388E3C),
