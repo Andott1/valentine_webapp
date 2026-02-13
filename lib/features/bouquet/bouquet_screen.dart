@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../app_controller.dart';
 import '../../core/ui/falling_flowers_background.dart';
-import '../../core/ui/top_status_bar.dart'; // Import Status Bar
+import '../../core/ui/top_status_bar.dart'; 
 import '../../core/ui/flip_widget.dart';
 import '../../core/ui/floating_widget.dart';
 import '../notes/future_plans_board.dart';
@@ -75,8 +75,8 @@ class _BouquetScreenState extends State<BouquetScreen>
     }
   }
 
-  void _handleSwipeUp(DragEndDetails details) {
-    if (_isEnvelopeVisible && !_isOpening && details.primaryVelocity! < -500) {
+  void _handleOpenLetter() {
+    if (_isEnvelopeVisible && !_isOpening) {
       _playOpeningSequence();
     }
   }
@@ -118,9 +118,6 @@ class _BouquetScreenState extends State<BouquetScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     
-    // Logic for mobile-responsive bouquet size
-    // It should never be wider than 80% of width
-    // AND never taller than 45% of height (to save room for text)
     final double bouquetSize = (screenWidth * 0.8).clamp(200.0, 350.0);
     final double constrainedSize = (bouquetSize > screenHeight * 0.45) 
         ? screenHeight * 0.45 
@@ -136,24 +133,23 @@ class _BouquetScreenState extends State<BouquetScreen>
               physics: _isOpening ? const NeverScrollableScrollPhysics() : null,
               children: [
                 // PAGE 1: Bouquet Hub
-                SafeArea( // Keeps content out of the "notch" area
+                SafeArea( 
                   child: Column(
                     children: [
-                      const SizedBox(height: 60), // Space for Status Bar
+                      const SizedBox(height: 60), 
                       
-                      // Flexible Spacer: Pushes content to center, but yields if space is tight
                       const Spacer(flex: 2),
 
                       // TITLE TEXT
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: FittedBox( // Ensures text never overflows
+                        child: FittedBox( 
                           fit: BoxFit.scaleDown,
                           child: Text(
                             "Happy Valentine's Day!\nILYSM Baby <3", 
                             textAlign: TextAlign.center, 
                             style: TextStyle(
-                              fontSize: 48, // Base size, FittedBox will scale it down
+                              fontSize: 48, 
                               color: const Color(0xFFD81B60), 
                               fontWeight: FontWeight.bold, 
                               shadows: const [Shadow(color: Colors.white, offset: Offset(2, 2))]
@@ -169,7 +165,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                         scale: _scaleAnimation,
                         child: GestureDetector(
                           onTap: _toggleFlip,
-                          onVerticalDragEnd: _handleSwipeUp,
+                          onLongPress: _handleOpenLetter, 
                           child: FloatingWidget(
                             child: FlipWidget(
                               controller: _flipController,
@@ -182,15 +178,14 @@ class _BouquetScreenState extends State<BouquetScreen>
                       
                       const SizedBox(height: 20),
 
-                      // HINT TEXT
+                      // HINT TEXT UPDATED
                       Text(
-                        _isEnvelopeVisible ? "(Swipe Up to Open)" : "(Tap for a surprise)", 
-                        style: const TextStyle(fontSize: 16, color: Colors.black45)
+                        _isEnvelopeVisible ? "(Long Press to Open)" : "(Tap for a surprise)", 
+                        style: const TextStyle(fontSize: 20, color: Colors.black45)
                       ),
                       
-                      const Spacer(flex: 3), // More space at bottom for visual balance
+                      const Spacer(flex: 3), 
 
-                      // ARROW
                       const Icon(Icons.keyboard_arrow_down, size: 40, color: Colors.black26),
                       const Text("Scroll Down", style: TextStyle(fontSize: 16, color: Colors.black26)),
                       const SizedBox(height: 20),
@@ -200,7 +195,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                 
                 // PAGE 2: Future Plans
                 SafeArea(
-                   child: Column( // Use Column to add the spacer
+                   child: Column( 
                      children: [
                        const Expanded(
                          child: Padding(
@@ -215,7 +210,6 @@ class _BouquetScreenState extends State<BouquetScreen>
             ),
           ),
           
-          // NEW STATUS BAR (Replaces floating Mute Button)
           const Positioned(
             top: 0,
             left: 0,
@@ -233,7 +227,7 @@ class _BouquetScreenState extends State<BouquetScreen>
   Widget _buildContainer(double size, {required Widget child}) {
     return Container(
       width: size,
-      height: size, // Force square aspect ratio
+      height: size, 
       decoration: BoxDecoration(
         shape: BoxShape.circle, 
         boxShadow: [

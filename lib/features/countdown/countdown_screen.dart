@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../app_controller.dart'; // Import Controller
+import '../../app_controller.dart'; 
 import '../../core/services/date_service.dart';
 import '../../core/ui/falling_flowers_background.dart';
 import '../../core/ui/pixel_window.dart';
 
 class CountdownScreen extends StatefulWidget {
-  final AppController controller; // Add Field
+  final AppController controller; 
 
-  const CountdownScreen({super.key, required this.controller}); // Update Constructor
+  const CountdownScreen({super.key, required this.controller}); 
 
   @override
   State<CountdownScreen> createState() => _CountdownScreenState();
@@ -33,7 +33,6 @@ class _CountdownScreenState extends State<CountdownScreen> {
     });
   }
 
-  // --- NEW: PASSWORD DIALOG LOGIC ---
   void _showDebugLogin() {
     final TextEditingController passController = TextEditingController();
     
@@ -72,12 +71,10 @@ class _CountdownScreenState extends State<CountdownScreen> {
           ),
           TextButton(
             onPressed: () {
-              // --- PASSWORD CHECK ---
               if (passController.text == "waitforvalentines") {
-                Navigator.pop(context); // Close dialog
-                widget.controller.debugTestBouquet(); // TRIGGER SKIP
+                Navigator.pop(context); 
+                widget.controller.debugTestBouquet(); 
               } else {
-                // Shake/Error feedback could go here, for now just close
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -110,7 +107,7 @@ class _CountdownScreenState extends State<CountdownScreen> {
     int seconds = _timeLeft.inSeconds % 60;
 
     return Scaffold(
-      body: Stack( // Changed to Stack to overlay the button
+      body: Stack(
         children: [
           FallingFlowersBackground(
             child: Center(
@@ -135,14 +132,18 @@ class _CountdownScreenState extends State<CountdownScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                "INVITATION ACCEPTED!",
-                                style: GoogleFonts.jersey10(
-                                  fontSize: 42,
-                                  color: const Color(0xFFD81B60),
-                                  height: 1.0,
+                              // SCALED TITLE
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "INVITATION ACCEPTED!",
+                                  style: GoogleFonts.jersey10(
+                                    fontSize: 42,
+                                    color: const Color(0xFFD81B60),
+                                    height: 1.0,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 10),
                               Text(
@@ -170,13 +171,24 @@ class _CountdownScreenState extends State<CountdownScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.baseline,
                                       textBaseline: TextBaseline.alphabetic,
                                       children: [
-                                        Text("$days", style: GoogleFonts.jersey10(fontSize: 56, color: const Color(0xFFD81B60), height: 1.0)),
+                                        // SCALED DAYS
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text("$days", style: GoogleFonts.jersey10(fontSize: 56, color: const Color(0xFFD81B60), height: 1.0))
+                                        ),
                                         const SizedBox(width: 8),
                                         Text("DAYS", style: GoogleFonts.jersey10(fontSize: 24, color: const Color(0xFF880E4F))),
                                       ],
                                     ),
                                     Container(margin: const EdgeInsets.symmetric(vertical: 8), height: 2, color: const Color(0xFF880E4F)),
-                                    Text("${_twoDigits(hours)}:${_twoDigits(minutes)}:${_twoDigits(seconds)}", style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFFD81B60), letterSpacing: 4, height: 1.0)),
+                                    // SCALED CLOCK
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        "${_twoDigits(hours)}:${_twoDigits(minutes)}:${_twoDigits(seconds)}", 
+                                        style: GoogleFonts.jersey10(fontSize: 48, color: const Color(0xFFD81B60), letterSpacing: 4, height: 1.0)
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -193,15 +205,13 @@ class _CountdownScreenState extends State<CountdownScreen> {
             ),
           ),
 
-          // --- NEW DEBUG BUTTON LOCATION ---
           Positioned(
             right: 20, 
             bottom: 20,
             child: SafeArea(
               child: Opacity(
-                opacity: 0.5, // Increased from 0.3
+                opacity: 0.5, 
                 child: Container(
-                  // Add a subtle background so it's always visible against flowers
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.5),
                     shape: BoxShape.circle,
