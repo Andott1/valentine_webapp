@@ -86,7 +86,7 @@ Ensure your `assets/` folder is structured exactly like this:
 
 ```text
 assets/
-├── bouquet.gif            # The main bouquet animation
+├── bouquet_looped.gif            # The main bouquet animation
 ├── sounds/
 │   ├── click.mp3          # UI interaction sound
 │   ├── error.mp3          # "No" button locked sound

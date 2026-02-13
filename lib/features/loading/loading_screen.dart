@@ -30,7 +30,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     if (mounted) {
       // 2. Preload Graphics (Parallel Loading)
       await Future.wait([
-        precacheImage(const AssetImage('assets/bouquet.gif'), context),
+        precacheImage(const AssetImage('assets/bouquet_looped.gif'), context),
         precacheImage(const AssetImage('assets/envelope.png'), context),
         precacheImage(const AssetImage('assets/envelope_open.gif'), context),
         for (int i = 1; i <= 12; i++)

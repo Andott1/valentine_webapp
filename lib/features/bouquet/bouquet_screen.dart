@@ -169,7 +169,7 @@ class _BouquetScreenState extends State<BouquetScreen>
                           child: FloatingWidget(
                             child: FlipWidget(
                               controller: _flipController,
-                              front: _buildContainer(constrainedSize, child: Image.asset('assets/bouquet.gif', fit: BoxFit.contain, gaplessPlayback: true)),
+                              front: _buildContainer(constrainedSize, child: Image.asset('assets/bouquet_looped.gif', fit: BoxFit.contain, gaplessPlayback: true)),
                               back: _buildContainer(constrainedSize, child: Image.asset(_isOpening ? 'assets/envelope_open.gif' : 'assets/envelope.png', fit: BoxFit.contain, gaplessPlayback: true)),
                             ),
                           ),
