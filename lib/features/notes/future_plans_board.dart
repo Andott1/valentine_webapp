@@ -306,7 +306,7 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
             const SizedBox(height: 20),
 
             PixelButton(
-              text: "SAVE PAGE AS PNG",
+              text: "SAVE PAGE",
               onPressed: _saveAsPng,
               mainColor: const Color(0xFF81C784),
               shadowColor: const Color(0xFF388E3C),
