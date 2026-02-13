@@ -1,8 +1,8 @@
 import 'dart:math'; 
 import 'dart:ui' as ui;
-import 'dart:typed_data'; 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_saver/file_saver.dart'; 
 import '../../core/services/storage_service.dart';
@@ -35,24 +35,31 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
       RenderRepaintBoundary? boundary = _globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
 
-      // 1. Capture Image
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
       
       Uint8List pngBytes = byteData.buffer.asUint8List();
 
-      // 2. Still trigger the file download (for backup/Android users)
-      await FileSaver.instance.saveFile(
-        name: "Bucket_List_Page_${_currentPage + 1}",
-        bytes: pngBytes,
-        fileExtension: "png",
-        mimeType: MimeType.png,
-      );
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        if (mounted) _showImagePreview(pngBytes);
+      } else {
+        await FileSaver.instance.saveFile(
+          name: "Bucket_List_Page_${_currentPage + 1}",
+          bytes: pngBytes,
+          fileExtension: "png",
+          mimeType: MimeType.png,
+        );
 
-      if (mounted) {
-        // 3. NEW: Show the "iOS Friendly" Preview Dialog
-        _showImagePreview(pngBytes);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: const Color(0xFF43A047),
+              content: Text("Image saved to Downloads!", style: GoogleFonts.jersey10(fontSize: 24, color: Colors.white)),
+              duration: const Duration(seconds: 2),
+            )
+          );
+        }
       }
 
     } catch (e) {
@@ -60,7 +67,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
     }
   }
 
-  // --- NEW: PREVIEW DIALOG FOR EASY SAVING ---
   void _showImagePreview(Uint8List imageBytes) {
     showDialog(
       context: context,
@@ -69,23 +75,23 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.pink, width: 3),
-                borderRadius: BorderRadius.circular(12),
-              ),
+            // Using PixelWindow for the retro look
+            PixelWindow(
+              title: "Preview.png", 
+              color: Colors.white,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     "Long Press Image to Save <3",
-                    style: GoogleFonts.jersey10(fontSize: 24, color: Colors.pink),
+                    style: GoogleFonts.jersey10(fontSize: 24, color: const Color(0xFFD81B60)),
                   ),
                   const SizedBox(height: 10),
-                  // Display the captured image so she can Long Press -> Save to Photos
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                  // A little border to make the image look like content
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black12, width: 2),
+                    ),
                     child: Image.memory(
                       imageBytes,
                       fit: BoxFit.contain,
@@ -95,12 +101,13 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
               ),
             ),
             const SizedBox(height: 20),
+            // Cyan Close Button
             PixelButton(
               text: "CLOSE",
               onPressed: () => Navigator.pop(context),
-              mainColor: Colors.white,
-              shadowColor: Colors.grey,
-              highlightColor: Colors.white70,
+              mainColor: const Color(0xFF4DD0E1),      
+              shadowColor: const Color(0xFF0097A7),    
+              highlightColor: const Color(0xFFB2EBF2), 
             )
           ],
         ),
@@ -208,7 +215,6 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // HEADER - SCALED
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
