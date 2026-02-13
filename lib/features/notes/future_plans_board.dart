@@ -35,12 +35,14 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
       RenderRepaintBoundary? boundary = _globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
 
+      // 1. Capture Image
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
       
       Uint8List pngBytes = byteData.buffer.asUint8List();
 
+      // 2. Still trigger the file download (for backup/Android users)
       await FileSaver.instance.saveFile(
         name: "Bucket_List_Page_${_currentPage + 1}",
         bytes: pngBytes,
@@ -49,17 +51,61 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF43A047),
-            content: Text("Page saved!", style: GoogleFonts.jersey10(fontSize: 24, color: Colors.white)),
-            duration: const Duration(seconds: 2),
-          )
-        );
+        // 3. NEW: Show the "iOS Friendly" Preview Dialog
+        _showImagePreview(pngBytes);
       }
+
     } catch (e) {
       debugPrint("Save Error: $e");
     }
+  }
+
+  // --- NEW: PREVIEW DIALOG FOR EASY SAVING ---
+  void _showImagePreview(Uint8List imageBytes) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.pink, width: 3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Long Press Image to Save <3",
+                    style: GoogleFonts.jersey10(fontSize: 24, color: Colors.pink),
+                  ),
+                  const SizedBox(height: 10),
+                  // Display the captured image so she can Long Press -> Save to Photos
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      imageBytes,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            PixelButton(
+              text: "CLOSE",
+              onPressed: () => Navigator.pop(context),
+              mainColor: Colors.white,
+              shadowColor: Colors.grey,
+              highlightColor: Colors.white70,
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   void _addOrEditPlan(int absoluteIndex) {
@@ -260,7 +306,7 @@ class _FuturePlansBoardState extends State<FuturePlansBoard> {
             const SizedBox(height: 20),
 
             PixelButton(
-              text: "SAVE PAGE",
+              text: "SAVE PAGE AS PNG",
               onPressed: _saveAsPng,
               mainColor: const Color(0xFF81C784),
               shadowColor: const Color(0xFF388E3C),
