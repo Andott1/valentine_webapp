@@ -29,16 +29,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
     if (mounted) {
       // 2. Preload Graphics (Parallel Loading)
-      // We use Future.wait to start all loads at once. 
-      // This is faster and fixes the "use_build_context_synchronously" warning.
       await Future.wait([
         precacheImage(const AssetImage('assets/bouquet.gif'), context),
+        precacheImage(const AssetImage('assets/envelope.png'), context),
+        precacheImage(const AssetImage('assets/envelope_open.gif'), context),
         for (int i = 1; i <= 12; i++)
           precacheImage(AssetImage('assets/flowers/$i.png'), context),
       ]);
     }
 
-    // Artificial delay
+    // Artificial delay (optional, keeps the retro vibe)
     await Future.delayed(const Duration(milliseconds: 1000));
 
     if (mounted) {
@@ -68,13 +68,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
       backgroundColor: const Color(0xFFFFF0F5),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0), // Padding to prevent edge touching
+          padding: const EdgeInsets.all(20.0), 
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (_isLoading) ...[
                 // Loading Text
-                FittedBox( // SCALES TEXT DOWN IF SCREEN IS NARROW
+                FittedBox( 
                   fit: BoxFit.scaleDown,
                   child: Text(
                     "LOADING...",
