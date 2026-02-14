@@ -58,7 +58,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void _handleStart() {
+    // 1. Play SFX immediately (Ride the user interaction wave)
     SoundService.playClick();
+    
+    // 2. Start BGM NOW (Not in the next screen)
+    // This unlocks the audio engine while we still have the user's "permission" from the tap.
+    if (widget.controller.initialPhase != AppPhase.proposal) {
+       SoundService.playBgm(); 
+    }
+
+    // 3. Navigate
     widget.controller.onLoadingComplete();
   }
 

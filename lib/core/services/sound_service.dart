@@ -3,7 +3,6 @@ import 'package:audioplayers/audioplayers.dart';
 class SoundService {
   static final AudioPlayer _sfxPlayer = AudioPlayer();
   static final AudioPlayer _bgmPlayer = AudioPlayer();
-  // NEW: Dedicated player for the typing loop
   static final AudioPlayer _typingPlayer = AudioPlayer();
   
   static bool isMuted = false;
@@ -12,7 +11,6 @@ class SoundService {
     await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
     await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
     
-    // NEW: Init typing player
     await _typingPlayer.setReleaseMode(ReleaseMode.stop);
     await _typingPlayer.setPlayerMode(PlayerMode.lowLatency);
     
@@ -21,8 +19,29 @@ class SoundService {
   }
 
   static Future<void> preload() async {
+    // 1. CONFIGURE AUDIO SESSION (The iOS Fix)
+    final AudioContext audioContext = AudioContext(
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playback,
+        options: { // Set syntax {}
+          AVAudioSessionOptions.defaultToSpeaker,
+          AVAudioSessionOptions.mixWithOthers,
+        },
+      ),
+      android: AudioContextAndroid(
+        isSpeakerphoneOn: true,
+        stayAwake: true,
+        contentType: AndroidContentType.music,
+        usageType: AndroidUsageType.media,
+        audioFocus: AndroidAudioFocus.none,
+      ),
+    );
+
+    // Apply this configuration globally
+    await AudioPlayer.global.setAudioContext(audioContext);
+
+    // 2. Preload Assets
     final cache = AudioCache(prefix: 'assets/sounds/');
-    // NOTE: You need to add 'typing.mp3' to your assets!
     await cache.loadAll(['click.mp3', 'error.mp3', 'success.mp3', 'bgm.mp3', 'typing.mp3']);
   }
 
@@ -45,10 +64,9 @@ class SoundService {
     await _sfxPlayer.play(AssetSource('sounds/success.mp3'), volume: 0.35);
   }
 
-  // --- NEW: TYPING SFX ---
+  // --- TYPING SFX ---
   static void startTyping() async {
     if (isMuted) return;
-    // Don't restart if already playing
     if (_typingPlayer.state == PlayerState.playing) return;
 
     await _typingPlayer.setReleaseMode(ReleaseMode.loop);
@@ -84,7 +102,6 @@ class SoundService {
     if (isMuted) {
       await _bgmPlayer.pause();
       await _sfxPlayer.stop();
-      // NEW: Stop typing immediately if muted
       await _typingPlayer.stop();
     } else {
       playBgm();
