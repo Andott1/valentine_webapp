@@ -1,6 +1,18 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/[^.]+", "dest": "/index.html", "status": 200 }
+  "headers": [
+    {
+      "source": "/(.*).mp3",
+      "headers": [
+        { "key": "Accept-Ranges", "value": "bytes" },
+        { "key": "Content-Type", "value": "audio/mpeg" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!.*\\.).*)",
+      "destination": "/index.html"
+    }
   ]
 }
