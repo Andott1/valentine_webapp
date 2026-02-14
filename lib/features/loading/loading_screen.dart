@@ -28,9 +28,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
     await SoundService.preload();
 
     if (mounted) {
-      // 2. Preload Graphics (Parallel Loading)
+      // 2. Preload Graphics
       await Future.wait([
-        precacheImage(const AssetImage('assets/bouquet_looped.gif'), context),
+        precacheImage(const AssetImage('assets/Bouquet.gif'), context), // Capital B
         precacheImage(const AssetImage('assets/envelope.png'), context),
         precacheImage(const AssetImage('assets/envelope_open.gif'), context),
         for (int i = 1; i <= 12; i++)
@@ -38,31 +38,27 @@ class _LoadingScreenState extends State<LoadingScreen> {
       ]);
     }
 
-    // Artificial delay (optional, keeps the retro vibe)
+    // Artificial delay for effect
     await Future.delayed(const Duration(milliseconds: 1000));
 
     if (mounted) {
-      // SMART CHECK: Where are we going?
-      final target = widget.controller.initialPhase;
-
-      if (target == AppPhase.proposal) {
-        // Require button press for audio permission
-        setState(() {
-          _isLoading = false; 
-        });
-      } else {
-        // Auto-skip for Countdown/Bouquet
-        widget.controller.onLoadingComplete();
-      }
+      // --- FIX: REMOVE AUTO-SKIP ---
+      // We ALWAYS show the button now. This ensures the user MUST click
+      // "Proceed", which gives us the "User Interaction" required to 
+      // play audio on iOS/Web after a reload.
+      setState(() {
+        _isLoading = false; 
+      });
     }
   }
 
   void _handleStart() {
-    // 1. Play SFX immediately (Ride the user interaction wave)
+    // 1. Play Click
     SoundService.playClick();
     
-    // 2. Start BGM NOW (Not in the next screen)
-    // This unlocks the audio engine while we still have the user's "permission" from the tap.
+    // 2. START BGM HERE
+    // Since we are inside a button click callback, the browser 
+    // gives us full permission to play audio.
     if (widget.controller.initialPhase != AppPhase.proposal) {
        SoundService.playBgm(); 
     }
@@ -73,6 +69,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Customize text based on where we are going
+    final String startText = (widget.controller.initialPhase == AppPhase.proposal)
+        ? "I Have a Question\nFor You..."
+        : "Welcome Back\nBabyy <3";
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF0F5),
       body: Center(
@@ -114,7 +115,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "I Have a Question\nFor You...",
+                    startText, // Dynamic Text
                     style: GoogleFonts.jersey10(
                       fontSize: 48,
                       color: const Color(0xFFD81B60),
